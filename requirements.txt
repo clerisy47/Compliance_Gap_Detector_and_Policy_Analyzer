@@ -1,0 +1,9 @@
+pandas
+PyMuPDF
+python-docx
+sentence-transformers
+scikit-learn
+faiss-cpu
+streamlit
+matplotlib
+.DS_Store
