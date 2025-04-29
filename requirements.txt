@@ -6,4 +6,3 @@ scikit-learn
 faiss-cpu
 streamlit
 matplotlib
-.DS_Store
