@@ -1,25 +1,25 @@
-
-from parsers.parse_docs import parse_documents
+from parsers.parse_docs import parse_answer_library, parse_frameworks, parse_policy_folder
 from summarizer.summarize import summarize_sections
 from embedder.generate_embeddings import embed_texts
 from matcher.semantic_match import match_requirements
 from recommender.generate_recommendations import suggest_fixes
 from dashboard.report_generator import generate_report
 
-compliance_docs = parse_documents("data/compliance_docs/")
-internal_policies = parse_documents("data/internal_policies/")
-qa_pairs = parse_documents("data/internal_qa/")
+framework_reqs = parse_frameworks("data/compliance_docs/frameworks.csv")
+internal_policies = parse_policy_folder("data/internal_policies/")
+answer_library = parse_answer_library("data/internal_qa/answer_library_entry.csv")
 
-compliance_reqs = summarize_sections(compliance_docs)
-internal_summaries = summarize_sections(internal_policies + qa_pairs)
+internal_policy_summaries = summarize_sections([doc["content"] for doc in internal_policies])
+qa_descriptions = [entry["details"] for entry in answer_library]
 
-req_embeddings = embed_texts(compliance_reqs)
-internal_embeddings = embed_texts(internal_summaries)
+framework_embeddings = embed_texts(framework_reqs)
+internal_embeddings = embed_texts(internal_policy_summaries + qa_descriptions)
+internal_texts = internal_policy_summaries + qa_descriptions
 
-matches = match_requirements(compliance_reqs, req_embeddings, internal_summaries, internal_embeddings)
+matches = match_requirements(framework_reqs, framework_embeddings, internal_texts, internal_embeddings)
 
 gaps_with_recs = suggest_fixes(matches)
 
-generate_report(compliance_reqs, matches, gaps_with_recs)
+generate_report(framework_reqs, matches, gaps_with_recs)
 
 print("Pipeline completed. Open the dashboard to view results.")
