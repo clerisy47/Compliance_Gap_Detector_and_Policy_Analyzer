@@ -22,4 +22,4 @@ gaps_with_recs = suggest_fixes(matches)
 
 generate_report(compliance_reqs, matches, gaps_with_recs)
 
-print("✅ Pipeline completed. Open the dashboard to view results.")
+print("Pipeline completed. Open the dashboard to view results.")
