@@ -1,4 +1,3 @@
-from transformers import pipeline
 import google.generativeai as genai
 
 GOOGLE_API_KEY = ""
