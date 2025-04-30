@@ -23,4 +23,6 @@ def run_rag_pipeline(query):
 
 with open("full_report.txt", "w") as file:
     for framework in frameworks:
+        result = run_rag_pipeline(framework)
+        # print("Generated Answer:", result)  # See what’s returned
         file.write(run_rag_pipeline(framework) + "\n\n\n\n\n")
