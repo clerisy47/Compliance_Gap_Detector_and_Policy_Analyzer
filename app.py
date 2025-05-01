@@ -7,15 +7,10 @@ import re
 from textwrap import dedent
 from main_pipeline import run_rag_pipeline
 
-<<<<<<< HEAD
-# st.write("App loaded!")
-
-=======
 from parsers.parse_docs import (
     parse_frameworks,
     parse_policy_folder,
 )
->>>>>>> efd29925fb1acbb511a9c3b056e5a8fc9a589832
 
 
 # --- UI CONFIG ---
