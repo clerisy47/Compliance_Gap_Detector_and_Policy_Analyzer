@@ -1,0 +1,6 @@
+Test Output:
+**Requirement:** This policy requires data to be encrypted at rest.
+
+**Evaluation:**
+
+Given the evidence, I conclude that the requirement is **Not Satisfied**. The reason is that while the system supports encryption for stored data, it does not explicitly state that data is being encrypted at rest, which is a specific condition stated in the policy.

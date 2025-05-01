@@ -1,0 +1,6 @@
+Test Output:
+**Compliance Requirement:** The system must support encryption for stored data.
+
+**Status:** Satisfied
+
+**Reasoning:** The evidence states that "This policy requires data to be encrypted at rest", which directly indicates that the system supports encryption for stored data. Therefore, the requirement is satisfied.
