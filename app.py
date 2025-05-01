@@ -6,6 +6,9 @@ from pathlib import Path
 import re
 from textwrap import dedent
 from main_pipeline import run_rag_pipeline
+from collections import Counter
+import plotly.express as px
+
 
 from parsers.parse_docs import (
     parse_frameworks,
@@ -102,6 +105,18 @@ def parse_report(text):
     return entries
 
 
+def normalize_response(value):
+    val = value.strip("*").strip().lower()
+    if val == "satisfied":
+        return "Yes"
+    elif val == "not satisfied":
+        return "No"
+    elif val == "missing":
+        return "Miss"
+    else:
+        return "Unknown"  # fallback if unexpected input
+
+
 policies = parse_policy_folder("data/policies/")
 
 
@@ -134,6 +149,9 @@ if uploaded_file and selected_frameworks:
                     )
 
             parsed_data = parse_report(full_text)
+            Status_list = [d["Status"] for d in parsed_data]
+            print(Status_list)
+
             for item in parsed_data:
                 results_data.append(
                     (
@@ -144,6 +162,43 @@ if uploaded_file and selected_frameworks:
                         item["Target Policy"],
                     )
                 )
+            output_list = [normalize_response(val) for val in Status_list]
+            print(output_list)
+            counts = Counter(output_list)
+
+            # Create DataFrame for plotly
+            labels = list(counts.keys())
+            values = list(counts.values())
+
+            # Create pie chart
+            fig = px.pie(
+                names=labels,
+                values=values,
+                title="Response Distribution",
+                color=labels,
+                color_discrete_map={"Yes": "green", "No": "red", "Miss": "gray"},
+            )
+
+            # Display in Streamlit
+            st.plotly_chart(fig)
+
+            data = []
+            for dic in parsed_data:
+                data.append(
+                    (
+                        dic["Requirement"],
+                        dic["Status"],
+                        dic["Reason"],
+                        dic["Target Policy"],
+                    )
+                )
+
+            df = pd.DataFrame(
+                data, columns=["Requirement", "Status", "Reason", "Target Policy"]
+            )
+
+            st.markdown("### Compliance Gap Results")
+            st.dataframe(df, use_container_width=True)
 
     if results_data:
         df = pd.DataFrame(
@@ -152,8 +207,10 @@ if uploaded_file and selected_frameworks:
         )
         st.markdown("### Compliance Gap Results")
         st.dataframe(df, use_container_width=True)
+
     else:
         st.warning("No data to display. There may have been errors during processing.")
+
 
 elif not uploaded_file:
     st.info("Please upload a ZIP file.")
