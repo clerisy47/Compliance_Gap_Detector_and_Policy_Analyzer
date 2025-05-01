@@ -10,6 +10,8 @@ from textwrap import dedent
 from main_pipeline import run_rag_pipeline
 from parsers.parse_docs import parse_frameworks
 
+# st.write("App loaded!")
+
 
 
 # --- UI CONFIG ---
