@@ -8,11 +8,7 @@ import pytesseract
 import nltk
 from nltk.tokenize import sent_tokenize
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
-
-nltk.download('punkt_tab')
-
+nltk.download("punkt_tab")
 
 
 def parse_answer_library(path):
@@ -40,16 +36,16 @@ def parse_frameworks(path):
     ]
 
 
-def parse_policy_folder(folder_path):
-    parsed_docs = []
-    for filename in os.listdir(folder_path):
-        if filename.lower().endswith(".pdf"):
-            path = os.path.join(folder_path, filename)
-            with fitz.open(path) as doc:
-                text = "\n".join([page.get_text() for page in doc])
-                sentences = sent_tokenize(text)
-                parsed_docs.extend(sentences)
-    return parsed_docs
+# def parse_policy_folder(folder_path):
+#     parsed_docs = []
+#     for filename in os.listdir(folder_path):
+#         if filename.lower().endswith(".pdf"):
+#             path = os.path.join(folder_path, filename)
+#             with fitz.open(path) as doc:
+#                 text = "\n".join([page.get_text() for page in doc])
+#                 sentences = sent_tokenize(text)
+#                 parsed_docs.extend(sentences)
+#     return parsed_docs
 
 
 def parse_policy_folder(folder_path):

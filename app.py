@@ -2,172 +2,164 @@ import streamlit as st
 import zipfile
 import os
 import pandas as pd
-import tempfile
-import random
 from pathlib import Path
 import re
 from textwrap import dedent
 from main_pipeline import run_rag_pipeline
-from parsers.parse_docs import parse_frameworks
 
+<<<<<<< HEAD
 # st.write("App loaded!")
 
+=======
+from parsers.parse_docs import (
+    parse_frameworks,
+    parse_policy_folder,
+)
+>>>>>>> efd29925fb1acbb511a9c3b056e5a8fc9a589832
 
 
 # --- UI CONFIG ---
 st.set_page_config(page_title="Compliance Gap Detector", layout="wide")
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #00CFFD;'>CyberPulse Compliance Gap Dashboard</h1>
+    <p style='text-align: center; color: #EDEDED;'>Select frameworks and upload your policy documents to identify gaps.</p>
+    """,
+    unsafe_allow_html=True,
+)
 
-# --- Title & Description ---
-st.markdown("""
-<h1 style='text-align: center; color: #00CFFD;'>CyberPulse Compliance Gap Dashboard</h1>
-<p style='text-align: center; color: #EDEDED;'>Select frameworks and upload your policy documents to identify gaps.</p>
-""", unsafe_allow_html=True)
-
-# --- Select Frameworks First ---
+# --- Framework Selection ---
 st.markdown("### Select Compliance Framework(s):")
 
-frameworks = [
-    "ISO", "NIST 800-53", "HIPAA", "GDPR", "CCPA",
-    "PCI-DSS", "CIS", "HITRUST", "NIST CSF", "SCF"
+available_frameworks = [
+    "ISO",
+    "NIST 800-53",
+    "HIPAA",
+    "GDPR",
+    "CCPA",
+    "PCI-DSS",
+    "CIS",
+    "HITRUST",
+    "NIST CSF",
+    "SCF",
 ]
 
 col1, col2, col3 = st.columns(3)
 selected_frameworks = []
 
-for i, fw in enumerate(frameworks):
-    if i % 3 == 0:
-        if col1.checkbox(fw): selected_frameworks.append(fw)
-    elif i % 3 == 1:
-        if col2.checkbox(fw): selected_frameworks.append(fw)
-    else:
-        if col3.checkbox(fw): selected_frameworks.append(fw)
-# --- Upload ZIP File ---
-st.markdown("### Upload Your ZIP File")
+for i, fw in enumerate(available_frameworks):
+    col = [col1, col2, col3][i % 3]
+    if col.checkbox(fw):
+        selected_frameworks.append(fw)
 
-uploaded_file = st.file_uploader("Upload ZIP File Containing Policy Documents (.zip)", type="zip")
+# --- ZIP File Upload ---
+st.markdown("### Upload Your ZIP File")
+uploaded_file = st.file_uploader(
+    "Upload ZIP File Containing Policy Documents (.zip)", type="zip"
+)
 
 if uploaded_file is not None:
-
-    # Define the target directory
     output_dir = Path("./data/policies")
-    output_dir.mkdir(exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save the uploaded file temporarily
     zip_path = output_dir / "temp_upload.zip"
     with open(zip_path, "wb") as f:
         f.write(uploaded_file.read())
 
-    # Unzip the file
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(output_dir)
-    zip_path.unlink()
-    
+    try:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(output_dir)
+        zip_path.unlink()
+        st.success("ZIP uploaded and extracted successfully.")
+    except zipfile.BadZipFile:
+        st.error("Uploaded file is not a valid ZIP archive.")
+        st.stop()
 
 
 def parse_report(text):
-    """
-    Parse a text report of the form:
-    
-    *Requirement*:
-    ...
-    *Status*: ...
-    *Reason*:
-    ...
-    *Target Policy*: ...
-    
-    into a list of dicts:
-    [
-      {
-        "Requirement": "...",
-        "Status": "...",
-        "Reason": "...",
-        "Target Policy": "..."
-      },
-      ...
-    ]
-    """
     entries = []
-    
-    # Split on each "*Requirement*:" (skip any leading text)
-    blocks = re.split(r'\*Requirement\*:', text)[1:]
-    
+    blocks = re.split(r"\*Requirement\*:", text)[1:]
+
     for blk in blocks:
-        # Requirement: up to *Status*:
-        req, rest = re.split(r'\*Status\*:', blk, maxsplit=1)
-        
-        # Status: up to *Reason*:
-        status, rest = re.split(r'\*Reason\*:', rest, maxsplit=1)
-        
-        # # Reason: up to *Target Policy*:
-        # reason, rest = re.split(r'\*Target Policy\*[:]? ', rest, maxsplit=1)
-        if '*Target Policy*' in rest:
-            reason_text, target_text = re.split(r'\*Target Policy\*[:]? ?', rest, maxsplit=1)
-        else:
-            reason_text, target_text = rest, '' 
-        # Target Policy: up to end of block (or next *Requirement*, but split took care)
-        # target = rest
-        
-        # Clean up whitespace and newlines
-        clean = lambda s: dedent(s).strip().replace('\n', ' ').replace('  ', ' ')
-        
-        entries.append({
-            "Requirement": clean(req),
-            "Status": clean(status),
-            "Reason": clean(reason_text),
-            "Target Policy": clean(target_text)
-        })
-    
+        try:
+            req, rest = re.split(r"\*Status\*:", blk, maxsplit=1)
+            status, rest = re.split(r"\*Reason\*:", rest, maxsplit=1)
+            if "*Target Policy*" in rest:
+                reason_text, target_text = re.split(
+                    r"\*Target Policy\*[:]? ?", rest, maxsplit=1
+                )
+            else:
+                reason_text, target_text = rest, ""
+
+            clean = lambda s: dedent(s).strip().replace("\n", " ").replace("  ", " ")
+            entries.append(
+                {
+                    "Requirement": clean(req),
+                    "Status": clean(status),
+                    "Reason": clean(reason_text),
+                    "Target Policy": clean(target_text),
+                }
+            )
+        except ValueError as e:
+            st.warning(f"Skipping a block due to parsing error: {e}")
+            continue
+
     return entries
 
-# --- Display Results ---
+
+policies = parse_policy_folder("data/policies/")
+
+
+# --- Run Analysis ---
 if uploaded_file and selected_frameworks:
-    print(selected_frameworks)
-    #USE THE CODE THAT TAKES LIST OF FRAMEWORK NAMES AND OUTPUTS CONSISE REPORT HERE
-    
-    concise_report = ""
+    st.markdown(f"**Frameworks selected:** {', '.join(selected_frameworks)}")
+    results_data = []
 
+    with open("full_report.txt", "w", encoding="utf-8") as report_file:
+        for framework_name in selected_frameworks:
+            st.write(f"Processing: **{framework_name}**")
+            report_file.write(f"*{framework_name}*\n\n\n")
+            try:
+                parsed_frameworks = parse_frameworks(
+                    f"data/frameworks/{framework_name}.xlsx"
+                )
+            except Exception as e:
+                st.error(f"Error loading framework {framework_name}: {e}")
+                continue
 
-    with open("full_report.txt", "w", encoding="utf-8") as file:
+            full_text = ""
+            for fw in parsed_frameworks:
+                try:
+                    result = run_rag_pipeline(fw, policies)
+                    report_file.write(result + "\n\n\n")
+                    full_text += result + "\n\n"
+                except Exception as e:
+                    st.error(
+                        f"Error running pipeline for {fw.get('name', 'unknown')}: {e}"
+                    )
 
+            parsed_data = parse_report(full_text)
+            for item in parsed_data:
+                results_data.append(
+                    (
+                        item["Requirement"],
+                        framework_name,
+                        item["Status"],
+                        item["Reason"],
+                        item["Target Policy"],
+                    )
+                )
 
-        for x in selected_frameworks:
-            file.write("*" + x + "*" + "\n\n\n")
-            frameworks = parse_frameworks(f"data/frameworks/{x}.xlsx")
+    if results_data:
+        df = pd.DataFrame(
+            results_data,
+            columns=["Requirement", "Framework", "Status", "Reason", "Target Policy"],
+        )
+        st.markdown("### Compliance Gap Results")
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.warning("No data to display. There may have been errors during processing.")
 
-            for framework in frameworks:
-                result = run_rag_pipeline(framework)
-                # print("Generated Answer:", result)  # See what’s returned
-                file.write(result + "\n\n\n\n\n")
-                
-                concise_report.append(result)
-            
-    
-    
-    # consise_report=main_code(selected_frameworks)
-    # gap_and_status = [{"gap":"snigdh","status":"lol"}, {"gap":"sussy", "status":"fuhrer"}]
-    dict_report = parse_report(concise_report)
-    data = []
-    for dic in dict_report:
-        data.append((dic["Requirement"], dic["Status"], dic["Reason"], dic["Target Policy"]))
-
-    
-    # with tempfile.TemporaryDirectory() as tmp_dir:
-    #     file_path = os.path.join(tmp_dir, uploaded_file.name)
-    #     with open(file_path, "wb") as f:
-    #         f.write(uploaded_file.getbuffer())
-
-    #     with zipfile.ZipFile(file_path, 'r') as zip_ref:
-    #         zip_ref.extractall(tmp_dir)
-
-    #     st.success("ZIP uploaded and extracted successfully.")
-
-
-    #     st.markdown(f"**Frameworks selected:** {', '.join(selected_frameworks)}")
-
-    df = pd.DataFrame(data, columns=["Requirement","Status", "Reason", "Target Policy"])
-
-    st.markdown("### Compliance Gap Results")
-    st.dataframe(df, use_container_width=True)
 elif not uploaded_file:
     st.info("Please upload a ZIP file.")
 elif not selected_frameworks:
