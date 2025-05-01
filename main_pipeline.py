@@ -22,29 +22,3 @@ def run_rag_pipeline(query):
         return generate_answer(query, context)
     else:
         return f"**Requirement**:\n\n {query} \n\n **Status**: Missing \n\n**Reason**: \n\nThe requirement is missing."
-
-
-
-with open("full_report.txt", "w", encoding="utf-8") as file:
-    list_of_frameworks = [
-        "CCPA",
-        "CIS",
-        "GDPR",
-        "HIPPA",
-        "HITRUST",
-        "ISO",
-        "NIST 800-53",
-        "NIST CSF",
-        "PCI-DSS",
-        "SCF",
-    ]
-
-    for x in list_of_frameworks:
-        file.write("*" + x + "*" + "\n\n\n")
-        frameworks = parse_frameworks(f"data/frameworks/{x}.xlsx")
-
-        for framework in frameworks:
-            result = run_rag_pipeline(framework)
-            # print("Generated Answer:", result)  # See what’s returned
-            file.write(run_rag_pipeline(framework) + "\n\n\n\n\n")
-            
