@@ -8,6 +8,9 @@ import pytesseract
 import nltk
 from nltk.tokenize import sent_tokenize
 
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+
 nltk.download('punkt_tab')
 
 
@@ -49,37 +52,32 @@ def parse_policy_folder(folder_path):
     return parsed_docs
 
 
-# def parse_policy_folder(folder_path):
-#     parsed_docs = []
+def parse_policy_folder(folder_path):
+    parsed_docs = []
 
-#     for filename in os.listdir(folder_path):
-#         if filename.lower().endswith(".pdf"):
-#             path = os.path.join(folder_path, filename)
-#             full_text = []
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(".pdf"):
+            path = os.path.join(folder_path, filename)
+            full_text = []
 
-#             with fitz.open(path) as doc:
-#                 for page_index in range(doc.page_count):
-#                     page = doc.load_page(page_index)
-#                     text = page.get_text()
-#                     full_text.append(text)
+            with fitz.open(path) as doc:
+                for page_index in range(doc.page_count):
+                    page = doc.load_page(page_index)
+                    text = page.get_text()
+                    full_text.append(text)
 
-#                     # Extract images and perform OCR
-#                     image_list = page.get_images(full=True)
-#                     for img_index, img in enumerate(image_list):
-#                         xref = img[0]
-#                         base_image = doc.extract_image(xref)
-#                         image_bytes = base_image["image"]
+                    image_list = page.get_images(full=True)
+                    for img_index, img in enumerate(image_list):
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        image_bytes = base_image["image"]
 
-#                         # grayscale conversion for better accuracy
-#                         image = Image.open(io.BytesIO(image_bytes)).convert("L")
-#                         ocr_text = pytesseract.image_to_string(image)
-#                         if ocr_text.strip():
-#                             full_text.append(
-#                                 f"[Image {img_index + 1} OCR]: {ocr_text.strip()}"
-#                             )
+                        image = Image.open(io.BytesIO(image_bytes)).convert("L")
+                        ocr_text = pytesseract.image_to_string(image)
+                        if ocr_text.strip():
+                            full_text.append(ocr_text.strip())
 
-#             parsed_docs.append(
-#                 {"filename": filename, "content": "\n".join(full_text).strip()}
-#             )
+            sentences = sent_tokenize("\n".join(full_text).strip())
+            parsed_docs.extend(sentences)
 
-#     return parsed_docs
+    return parsed_docs

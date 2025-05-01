@@ -1,5 +1,7 @@
 import ollama
-from pdf_parser import parse_policy_folder  
+from parsers.parse_docs import parse_policy_folder
+
+
 
 def summarize_with_llama(content):
     # prompt = f"""Summarize the following document content into bullet-point key ideas. Be concise and ignore filler content. /
@@ -53,7 +55,7 @@ def summarize_with_llama(content):
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     # Parse PDFs from the 'policy' folder
     parsed_docs = parse_policy_folder("policies")
 
