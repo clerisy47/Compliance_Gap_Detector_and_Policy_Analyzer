@@ -53,6 +53,7 @@ streamlit run app.py
 ![Analysis Report](https://scontent.fktm7-1.fna.fbcdn.net/v/t1.15752-9/494574985_1847136959398911_5475147670000810093_n.png?stp=dst-png_s960x960&_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_eui2=AeFoBNhQMeWodSqZowfF-iFe0s8323_w8-bSzzfbf_Dz5uZpKk749UjPhf8p1xVGDqZx9qaT0Ju1GT3iVNr4_LV8&_nc_ohc=LbWcwjrAV3AQ7kNvwG-U_eZ&_nc_oc=Adm8-b-AM2jQr7fTM3UxMCue-gxAGctTbnQrKXDLQUZze5j7Y6mRRt79fyPf8SEo3LObN0I3lkkhfcfkMpYLzp37&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fktm7-1.fna&oh=03_Q7cD2AFWSqUjXiwoaew_25ymjUe_fLOvS1A4YLwZa-rg0Jf5Ow&oe=683AB669)
 
 ## How it Works
+![Project Workflow: A brief overview of how this works](https://cdn.discordapp.com/attachments/1366650782153183252/1367356774012817489/flowchart.png?ex=681449bb&is=6812f83b&hm=1a4c99ead165dc9004a1ff29a0ac4cd0362901c34d948639a24e3184e7b48e8f&format=webp&quality=lossless&width=865&height=649)
 
 ### Document Parsing:
 
