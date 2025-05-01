@@ -74,3 +74,6 @@ streamlit run app.py
 ### Report Generation:
 
 - A comprehensive report is generated, showing areas where internal policies are lacking or need improvement. This report includes visualizations (e.g., tables, charts) that help illustrate the gaps.
+
+## License
+This project is open-source and available under the MIT License. See the [LICENSE](https://github.com/clerisy47/Compilance_Gap_Detector_and_Policy_Analyzer/blob/main/LICENSE) file for more information.
