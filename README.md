@@ -4,22 +4,6 @@
 
 Organizations need to ensure their internal security policies align with various compliance standards such as NIST, ISO 27001, and others. The goal of this project is to build a system that analyzes key requirements from relevant policy documents and compliance frameworks and compares them with an organization's internal knowledge base. This will allow the identification of compliance gaps or areas where security policies fall short.
 
-### Key Components
-
-1. **Data Provided**:
-   - Dummy set of security Q&A pairs representing the internal knowledge library.
-   - Sample documents outlining compliance frameworks (e.g., NIST, ISO 27001).
-   - Dummy internal policy documents.
-   - Study materials on compliance standards, policy analysis, and gap identification.
-
-2. **Expected Outcome**:
-   - **Compliance Gap Analysis**: The system will extract, summarize, and analyze key compliance requirements and compare them with internal knowledge. It will identify compliance gaps and areas for improvement.
-   - **Report Generation**: The system will generate a report that highlights the gaps, includes visualizations like charts and tables, and provides recommendations based on study materials or best practices.
-
-3. **Technical Expectations**:
-   - **Model Training**: Local language models (LLMs) for summarization and transformer-based models for generating semantic embeddings for comparing internal responses, policy summaries, and framework requirements.
-   - **Pipeline Design**: A multi-step pipeline that includes document parsing, summarization, semantic embedding generation, mapping internal knowledge to compliance controls, gap identification, and report generation.
-   - **UI Design**: A dashboard displaying the gap analysis, with interactive elements like drill-down charts.
 
 ### Requirements
 
