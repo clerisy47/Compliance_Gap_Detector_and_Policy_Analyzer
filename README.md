@@ -5,6 +5,7 @@
 Organizations need to ensure their internal security policies align with various compliance standards such as NIST, ISO 27001, and others. The goal of this project is to build a system that analyzes key requirements from relevant policy documents and compliance frameworks and compares them with an organization's internal knowledge base. This will allow the identification of compliance gaps or areas where security policies fall short.
 
 
+
 ### Requirements
 
 - Python 3.x
